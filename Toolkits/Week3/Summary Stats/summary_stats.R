@@ -1,6 +1,7 @@
 #Summary Stat Toolkit
 library(tidyverse)
 
+#setwd("PHW272A_Spring2022/Toolkits/Week3/")
 air <- read_csv("Summary Stats/pm25_daily_average_ct_pp_v3.csv")
                  
 head(air)

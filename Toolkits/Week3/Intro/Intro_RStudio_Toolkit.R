@@ -8,7 +8,7 @@ library(ggmap)
 #Load in the earthquake data
 
 getwd()
-#setwd()
+#setwd("PHW272A_Spring2022/Toolkits/Week3/")
 dat <- read_csv("Intro/earthquake.csv")
 head(dat)
 
