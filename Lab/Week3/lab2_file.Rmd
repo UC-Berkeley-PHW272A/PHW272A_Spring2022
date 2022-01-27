@@ -12,7 +12,9 @@ library(RColorBrewer)
 library(ggplot2)
 library(ggmap)
 library(dplyr)
-setwd("PHW272A_Spring2022/Lab/Week3/")
+library(leaflet)
+library(classInt)
+#setwd("PHW272A_Spring2022/Lab/Week3/")
 '%notin%' <- Negate('%in%')
 ```
 
@@ -86,10 +88,37 @@ ggplot(us_continental_covid) + geom_sf(aes(fill = Incident_Rate)) +
 pal <- brewer.pal(5, "Greens")
 
 plot(us_continental_covid["Testing_Rate"],
-     main = "Testing Rate in US States")#,
-     #breaks = "pretty",
-     #nbreaks = 5, pal = pal)
+     main = "Testing Rate in US States",
+     breaks = "pretty", nbreaks = 7)
 
 
+```
+
+```{r Test out leaflet}
+#Change datum from NAD83 to WGS84
+us_continental_WGS84 <- st_transform(us_continental_covid, 4326)
+
+pal_fun <- colorQuantile("YlOrRd", NULL, n = 5)
+
+cfr_popup <- paste0("<strong>Case-Fatality Ratio: </strong>", us_continental_WGS84$Case_Fatality_Ratio)
+
+breaks_qt <- classIntervals(us_continental_WGS84$Case_Fatality_Ratio, n = 5, style = "quantile")
+
+breaks_labels <- paste0(format(breaks_qt$brks[-length(breaks_qt)], digits = 3), "-",
+                        format(breaks_qt$brks[-1], digits = 3))
+
+leaflet(us_continental_WGS84) %>%
+  addPolygons(
+    stroke = TRUE, 
+    weight = 0.2,
+    color = "grey",
+    fillColor = ~pal_fun(Case_Fatality_Ratio),
+    fillOpacity = 0.8, smoothFactor = 0.5,
+    popup = cfr_popup) %>%
+  addTiles() %>%
+  addLegend("bottomright",  # location
+            colors = brewer.pal(5, "YlOrRd"),  # palette function
+            labels = breaks_labels,
+            title = 'Case-Fatality Ratio by State') # legend title
 ```
 
