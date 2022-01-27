@@ -14,7 +14,7 @@ library(ggmap)
 library(dplyr)
 library(leaflet)
 library(classInt)
-#setwd("PHW272A_Spring2022/Lab/Week3/")
+setwd("PHW272A_Spring2022/Lab/Week3/")
 '%notin%' <- Negate('%in%')
 ```
 
