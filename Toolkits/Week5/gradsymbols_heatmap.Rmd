@@ -1,0 +1,68 @@
+---
+title: 'PHW272A: Graduated Symbols and Heatmaps in ggplot2'
+author: "Tomás León"
+date: "1/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#Load necessary libraries
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(ggmap)
+library(gridExtra)
+library(cowplot)
+library(patchwork)
+setwd("~/PHW272A_Spring2022/Toolkits/Week5")
+```
+
+```{r Load and Inspect Data}
+#Load trap data
+dc_traps <- read.csv(file = "dc_trap_sites.csv", header = TRUE)
+class(dc_traps) #data frame needed to work well with ggplot
+
+dc_map <- get_stamenmap(bbox = c(left = -77.13, bottom = 38.81, right = -76.92, top = 39.0), maptype = "terrain", zoom = 12)
+ggmap(dc_map) #loading and prepping DC map
+
+colnames(dc_traps)
+```
+```{r Map by Trap Type}
+ggmap(dc_map) + geom_point(data = dc_traps, aes(x = LONGITUDE, y = LATITUDE), col = "red")
+
+#Map colored by trap type
+ggmap(dc_map) + geom_point(data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, col = TRAPTYPE)) + theme_bw() #+
+#scale_color_discrete(name = "Trap Type") + ggtitle("Mosquito Trap Types in DC")
+
+```
+
+```{r Mosquito Maps}
+#Male mosquitoes map
+ggmap(dc_map) + geom_point(data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, size = MALESCOLLE), col = "blue") + theme_bw() +
+  guides(size = guide_legend(title = "# of Males Collected")) + ggtitle("Male Mosquito Collections in DC") + theme(plot.title = element_text(hjust = 0.5))
+
+#Female mosquitoes map
+ggmap(dc_map) + geom_point(data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, size = FEMALESCOL), col = "red") + theme_bw() +
+  guides(size = guide_legend(title = "# of Females Collected")) + ggtitle("Female Mosquito Collections in DC") + theme(plot.title = element_text(hjust = 0.5))
+
+male_map <- ggmap(dc_map) + geom_point(data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, size = MALESCOLLE), col = "blue") + theme_bw() +
+  guides(size = guide_legend(title = "# of Males")) + ggtitle("Male Mosquito Collections in DC")  + theme_void() + theme(plot.title = element_text(hjust = 0.5))
+
+female_map <- ggmap(dc_map) + geom_point(data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, size = FEMALESCOL), col = "red") + theme_bw() +
+  guides(size = guide_legend(title = "# of Females")) + ggtitle("Female Mosquito Collections in DC") + theme_void() + theme(plot.title = element_text(hjust = 0.5)) 
+
+grid.arrange(female_map, male_map, ncol = 2)
+male_map + female_map #patchwork version
+plot_grid(male_map, female_map, labels = c("(a)","(b)"))
+```
+
+```{r Heatmaps}
+
+ggmap(dc_map) + stat_density_2d(geom = "polygon", data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, fill = stat(level))) + labs(fill = "Mosquito Catches") +
+  scale_fill_viridis_c() + theme_void()
+
+#Increase Alpha
+ggmap(dc_map) + stat_density_2d(geom = "polygon", data = dc_traps, aes(x = LONGITUDE, y = LATITUDE, fill = stat(level)), alpha = 0.5) + labs(fill = "Mosquito Catches") +
+  scale_fill_viridis_c() + theme_void()
+
+```
+
