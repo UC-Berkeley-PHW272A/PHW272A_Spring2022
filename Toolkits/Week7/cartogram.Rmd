@@ -1,0 +1,71 @@
+---
+title: "Cartograms in R"
+author: "PHW272A"
+date: "2/9/2022"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+##Partial source: https://www.r-graph-gallery.com/331-basic-cartogram.html
+
+install.packages('cartogram')
+
+library(cartogram)
+library(maptools)
+library(tidyverse)
+library(broom)
+library(rgeos)
+library(sf)
+
+#read in spatial and table data
+us_states <- st_read("~/PHW272A_Spring2022/Toolkits/Week7/cb_2019_us_state_500k/cb_2019_us_state_500k.shp")
+
+covid_states <- read_csv("~/PHW272A_Spring2022/Toolkits/Week7/covid_states_01-19-2022.csv")
+
+hex_data <- st_read("~/PHW272A_Spring2022/Toolkits/Week7/us_states_hexgrid.geojson")
+```
+
+We will focus on continental US states like in Lab 3.
+```{r Manipulate and Project Data, echo = FALSE}
+
+cruiseship_names <- c("Diamond Princess", "Grand Princess")
+covid_states <- covid_states %>% filter(Province_State %notin% cruiseship_names)
+## Create continental-only versions
+non_continental_names <- c("Guam", "United States Virgin Islands", "Virgin Islands", "American Samoa", "Commonwealth of the Northern Mariana Islands", "Northern Mariana Islands", "Hawaii", "Alaska", "Puerto Rico")
+
+covid_continental <- covid_states %>% filter(!(Province_State %in% non_continental_names))
+us_continental <- us_states %>% filter(!(NAME %in% non_continental_names))
+hex_continental <- hex_data%>% filter(!(State_name %in% non_continental_names))
+#Do table join on data
+us_continental_covid <- left_join(us_continental, covid_continental, by = c(NAME = "Province_State"))
+hex_continental_covid <- left_join(hex_continental, covid_continental, by = c(State_name = "Province_State"))
+
+us_data_proj <- sf::st_transform(us_continental_covid, 3857) #projecting the data
+
+hex_data_proj <- sf::st_transform(hex_continental_covid, 3857) #projecting the data
+```
+
+```{r Create a Continuous Area Cartogram, echo = FALSE}
+
+us_cartogram <- cartogram_cont(us_data_proj, "Incident_Rate", itermax=10)
+
+
+par(mfrow=c(1,2)) #Setting it to show two plots side-by-side
+plot(us_data_proj["NAME"], main = "Original", reset = FALSE)
+plot(us_cartogram["NAME"], main = "Cartogram", reset = FALSE)
+par(mfrow=c(1,1)) 
+plot(us_cartogram["Incident_Rate"], main = "Cartogram: COVID-19 Incidence Rate", reset = FALSE)
+```
+
+```{r Non-contiguous Area Cartogram, echo = FALSE}
+hex_cartogram <- cartogram_ncont(hex_data_proj, "Case_Fatality_Ratio", k = 1)
+
+ggplot() + 
+  geom_sf(data = hex_cartogram, aes(fill = Case_Fatality_Ratio)) +
+  theme_void() + labs(fill = "CFR (%)", title = "Cartogram: CFR by State") +
+  scale_fill_distiller(palette = "RdBu") +
+  theme(plot.title = element_text(hjust = 0.5, size = 20))
+
+```
+
