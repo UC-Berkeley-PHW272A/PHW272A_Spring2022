@@ -30,7 +30,7 @@ We will focus on continental US states like in Lab 3.
 ```{r Manipulate and Project Data, echo = FALSE}
 
 cruiseship_names <- c("Diamond Princess", "Grand Princess")
-covid_states <- covid_states %>% filter(Province_State %notin% cruiseship_names)
+covid_states <- covid_states %>% filter(!(Province_State %in% cruiseship_names))
 ## Create continental-only versions
 non_continental_names <- c("Guam", "United States Virgin Islands", "Virgin Islands", "American Samoa", "Commonwealth of the Northern Mariana Islands", "Northern Mariana Islands", "Hawaii", "Alaska", "Puerto Rico")
 
