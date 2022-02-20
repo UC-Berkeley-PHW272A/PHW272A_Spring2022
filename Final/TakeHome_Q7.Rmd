@@ -1,0 +1,43 @@
+---
+title: "Take Home Final, Question 7"
+author: "Tomás León"
+date: "2/19/2022"
+output: html_document
+---
+
+##Code for Take Home Final Q7
+
+Calculate the average level of greenness within 1km of hazardous waste sites in California.
+Produce 2 plots, worth 12 points total.
+I provide the skeleton of the code but you will need to fill in missing parts like for past assignments.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load tidyverse library
+library(tidyverse)
+
+# Upload your data and set the path
+evi_data <- read_csv("FILL IN PATH HERE")
+```
+
+```{r Summary Statistics}
+# Inspect data as you see fit
+
+# Calculate average level of greenness within 1km of hazardous waste sites
+summary("Fill this in")
+
+sd("Fill this in")
+```
+
+```{r Plots, echo=fALSE}
+# Produce two plots illustrating average EVI within 1km of hazardous waste sites
+ggplot(evi_data, aes(x = as.factor("Fill this in"), y = "Fill this in")) + 
+  geom_violin() +
+  xlab("ADD X LABEL") +
+  ylab("ADD Y LABEL") +
+  theme_minimal()
+
+ggplot(evi_data, aes("ADD APPROPRIATE COLUMN NAME HERE")) + geom_histogram(bins = "SELECT NUMBER OF BINS") #+ more?
+
+```
+
