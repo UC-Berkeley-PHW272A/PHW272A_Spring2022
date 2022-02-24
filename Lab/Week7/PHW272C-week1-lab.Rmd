@@ -224,17 +224,18 @@ plot(elev)
 
 Alternatively, you can use leaflet
 ```{r}
-basemap %>% addRasterImage(elev)
+# NOTE: this crashed R Studio on DataHub for me, but you can try it on your local R Studio on your computer
+#basemap %>% addRasterImage(elev)
 ```
 
 If you want to add a legend, you have to define the color palette first
 ```{r}
 # Define palette
-raster_colorPal <- colorNumeric(topo.colors(64), values(elev), na.color = NA)
-
+# raster_colorPal <- colorNumeric(topo.colors(64), values(elev), na.color = NA)
+# 
 # Plot
-basemap %>% addRasterImage(elev, color = raster_colorPal) %>%
-addLegend(values = values(elev), pal = raster_colorPal)
+# basemap %>% addRasterImage(elev, color = raster_colorPal) %>%
+# addLegend(values = values(elev), pal = raster_colorPal)
 ```
 
 
