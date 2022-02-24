@@ -1,6 +1,6 @@
 ---
 title: Week 1 - Visualizing spatial data
-output: pdf
+output: html_document
 always_allow_html: yes
 ---
 
